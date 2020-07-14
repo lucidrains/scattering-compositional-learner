@@ -23,7 +23,7 @@ import torch
 import torch.nn.functional as F
 from scattering_transform import SCL
 
-# data
+# data - (batch, number of choices, channel dimension, image height, image width)
 
 questions = torch.randn(1, 8, 1, 160, 160)
 answers   = torch.randn(1, 8, 1, 160, 160)
