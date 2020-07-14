@@ -29,24 +29,17 @@ questions = torch.randn(1, 8, 1, 160, 160)
 answers   = torch.randn(1, 8, 1, 160, 160)
 labels    = torch.tensor([2])
 
-answers   = answers[:, :, None, :, :, :]
-questions = questions[:, None, :, :, :, :].expand(-1, 8, -1, -1, -1, -1)
-
-# the network looks at all permutations of questions to each answer
-
-possibilities = torch.cat((questions, answers), dim=2)
-
 # instantiate model
 
 model = SCL(
-    image_size = 160,
-    set_size = 9,
-    conv_channels = [1, 16, 16, 32, 32, 32],
-    conv_output_dim = 80,
-    attr_heads = 10,
-    attr_net_hidden_dims = [128],
-    rel_heads = 80,
-    rel_net_hidden_dims = [64, 23, 5]
+    image_size = 160,                           # size of image
+    set_size = 9,                               # number of questions + 1 answer
+    conv_channels = [1, 16, 16, 32, 32, 32],    # convolutional channel progression, 1 for greyscale, 3 for rgb
+    conv_output_dim = 80,                       # model dimension, the output dimension of the vision net
+    attr_heads = 10,                            # number of attribute heads
+    attr_net_hidden_dims = [128],               # attribute scatter transform MLP hidden dimension(s)
+    rel_heads = 80,                             # number of relationship heads
+    rel_net_hidden_dims = [64, 23, 5]           # MLP for relationship net
 )
 
 model = SCLTrainingWrapper(model)
