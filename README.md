@@ -1,3 +1,5 @@
+<img src="./scattering.png" width="600px"></img>
+
 ## Scattering Compositional Learner
 
 Implementation of <a href="https://arxiv.org/abs/2007.04212">Scattering Compositional Learner</a>, which reached superhuman levels on Raven's Progressive Matrices, a type of IQ test for analogical reasoning.
