@@ -8,6 +8,12 @@ This repository is meant to be exploratory, so it may not follow the exact archi
 
 If you would like the exact architecture used in the paper, the <a href="https://github.com/dhh1995/SCL">official repository is here</a>.
 
+## Install
+
+```bash
+$ pip install scattering-transform
+```
+
 ## Use
 
 ```python
