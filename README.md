@@ -21,7 +21,7 @@ Complete Scattering Compositional Learner network
 ```python
 import torch
 import torch.nn.functional as F
-from scattering_transform import SCL
+from scattering_transform import SCL, SCLTrainingWrapper
 
 # data - (batch, number of choices, channel dimension, image height, image width)
 
@@ -49,7 +49,8 @@ model = SCL(
     rel_net_hidden_dims = [64, 23, 5]
 )
 
-logits = model(possibilities)
+model = SCLTrainingWrapper(model)
+logits = model(questions, answers) # (1, 8) - the logits of each answer being the correct match
 
 # train
 

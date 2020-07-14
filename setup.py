@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
   name = 'scattering-transform',
   packages = find_packages(),
-  version = '0.0.5',
+  version = '0.0.6',
   license='MIT',
   description = 'Scattering Transform module from the paper Scattering Compositional Learner',
   author = 'Phil Wang',

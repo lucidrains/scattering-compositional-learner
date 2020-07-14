@@ -7,6 +7,12 @@ import torch.nn.functional as F
 def default(val, default_val):
     return val if val is not None else default_val
 
+def expand_dim(t, dim, k):
+    t = t.unsqueeze(dim)
+    expand_shape = [-1] * len(t.shape)
+    expand_shape[dim] = k
+    return t.expand(*expand_shape)
+
 # simple MLP with ReLU activation
 
 class MLP(nn.Module):
@@ -141,3 +147,17 @@ class SCL(nn.Module):
         
         logits = self.to_logit(rels).flatten(1)
         return logits
+
+# wrapper for easier training
+
+class SCLTrainingWrapper(nn.Module):
+    def __init__(self, scl):
+        super().__init__()
+        self.scl = scl
+
+    def forward(self, questions, answers):
+        answers = answers.unsqueeze(2)
+        questions = expand_dim(questions, dim=1, k=8)
+
+        permutations = torch.cat((questions, answers), dim=2)
+        return self.scl(permutations)

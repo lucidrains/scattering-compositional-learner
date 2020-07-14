@@ -1,1 +1,1 @@
-from scattering_transform.scattering_transform import SCL, ScatteringTransform
+from scattering_transform.scattering_transform import SCL, ScatteringTransform, SCLTrainingWrapper
