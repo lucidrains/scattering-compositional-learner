@@ -120,7 +120,7 @@ class SCL(nn.Module):
         self.ff_residual = FeedForwardResidual(conv_output_dim)
 
         self.rel_heads = rel_heads
-        self.rel_net = MLP(set_size, *rel_net_hidden_dims)
+        self.rel_net = MLP(set_size * (conv_output_dim // rel_heads), *rel_net_hidden_dims)
 
         self.to_logit = nn.Linear(rel_net_hidden_dims[-1] * rel_heads, 1)
 
@@ -132,7 +132,7 @@ class SCL(nn.Module):
         attrs = self.attr_net(features)
         attrs = self.ff_residual(attrs)
 
-        attrs = attrs.reshape(b, m, -1, self.rel_heads).transpose(-1, -2)
+        attrs = attrs.reshape(b, m, n, self.rel_heads, -1).transpose(-2, -3).flatten(3)
         rels = self.rel_net(attrs)
         rels = rels.flatten(2)
         
