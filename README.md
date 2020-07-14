@@ -19,7 +19,7 @@ from scattering_transform import SCL
 
 questions = torch.randn(1, 8, 160, 160)   # 8 questions
 answers   = torch.randn(1, 8, 160, 160)   # 8 possible answers
-labels    = torch.tensor([2])  			  # correct answer is 2
+labels    = torch.tensor([2])             # correct answer is 2
 
 answers   = answers[:, :, None, :, :]
 questions = questions[:, None, :, :, :].expand(-1, 8, -1, -1, -1)
@@ -31,7 +31,7 @@ possibilities = torch.cat((questions, answers), dim=2)
 # instantiate model
 
 model = SCL(
-	image_size = 160,
+    image_size = 160,
     set_size = 9,
     conv_channels = [1, 16, 16, 32, 32, 32],
     conv_output_dim = 80,
