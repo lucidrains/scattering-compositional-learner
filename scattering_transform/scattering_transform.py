@@ -125,14 +125,14 @@ class SCL(nn.Module):
         self.to_logit = nn.Linear(rel_net_hidden_dims[-1] * rel_heads, 1)
 
     def forward(self, sets):
-        b, c, n, h, w = sets.shape
-        images = sets.view(-1, 1, h, w)
+        b, m, n, c, h, w = sets.shape
+        images = sets.view(-1, c, h, w)
         features = self.vision(images)
 
         attrs = self.attr_net(features)
         attrs = self.ff_residual(attrs)
 
-        attrs = attrs.reshape(b, c, -1, self.rel_heads).transpose(-1, -2)
+        attrs = attrs.reshape(b, m, -1, self.rel_heads).transpose(-1, -2)
         rels = self.rel_net(attrs)
         rels = rels.flatten(2)
         

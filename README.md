@@ -25,12 +25,12 @@ from scattering_transform import SCL
 
 # data
 
-questions = torch.randn(1, 8, 160, 160)   # 8 questions
-answers   = torch.randn(1, 8, 160, 160)   # 8 possible answers
-labels    = torch.tensor([2])             # correct answer is 2
+questions = torch.randn(1, 8, 1, 160, 160)
+answers   = torch.randn(1, 8, 1, 160, 160)
+labels    = torch.tensor([2])
 
-answers   = answers[:, :, None, :, :]
-questions = questions[:, None, :, :, :].expand(-1, 8, -1, -1, -1)
+answers   = answers[:, :, None, :, :, :]
+questions = questions[:, None, :, :, :, :].expand(-1, 8, -1, -1, -1, -1)
 
 # the network looks at all permutations of questions to each answer
 
