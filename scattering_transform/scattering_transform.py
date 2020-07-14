@@ -58,8 +58,11 @@ class ConvNet(nn.Module):
         convolutions = []
         channel_pairs = list(zip(chans[:-1], chans[1:]))
 
-        for chan_in, chan_out in channel_pairs:
+        for ind, (chan_in, chan_out) in enumerate(channel_pairs):
+            is_last = ind >= (len(channel_pairs) - 1)
             convolutions.append(nn.Conv2d(chan_in, chan_out, 3, padding=1, stride=2))
+            if not is_last:
+                convolutions.append(nn.BatchNorm2d(chan_out))
 
         self.net = nn.Sequential(
             *convolutions,

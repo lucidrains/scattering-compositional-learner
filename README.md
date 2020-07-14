@@ -57,7 +57,7 @@ loss = F.cross_entropy(logits, labels)
 loss.backward()
 ```
 
-Scattering Transform
+Scattering Transform, which is basically one MLP that acts over groups of the dimension
 
 ```python
 import torch
@@ -66,9 +66,9 @@ from scattering_transform import ScatteringTransform
 # for potential use in a Transformer
 
 mlp = ScatterTransform(
-    dims = [1024, 4096, 1024],
-    heads = 16,
-    activation = nn.LeakyReLU
+    dims = [1024, 4096, 1024],    # MLP - dimension in -> hidden sizes -> dimension out
+    heads = 16,                   # number of groups (heads)
+    activation = nn.LeakyReLU     # activation to use in the MLP
 )
 
 x = torch.randn(1, 512, 1024)
