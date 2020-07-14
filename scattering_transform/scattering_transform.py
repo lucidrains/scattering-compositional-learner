@@ -2,12 +2,18 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 
+# helper functions
+
+def default(val, default_val):
+    return val if val is not None else default_val
+
 # simple MLP with ReLU activation
 
 class MLP(nn.Module):
-    def __init__(self, *dims):
+    def __init__(self, *dims, activation = None):
         super().__init__()
-        assert len(dims) >= 3, 'must have at least 3 dimensions, for dimension in and dimension out'
+        assert len(dims) > 2, 'must have at least 3 dimensions, for dimension in and dimension out'
+        activation = default(activation, nn.ReLU)
 
         layers = []
         pairs = list(zip(dims[:-1], dims[1:]))
@@ -16,7 +22,7 @@ class MLP(nn.Module):
             is_last = ind >= (len(pairs) - 1)
             layers.append(nn.Linear(dim_in, dim_out))
             if not is_last:
-                layers.append(nn.ReLU(inplace = True))
+                layers.append(activation(inplace = True))
 
         self.net = nn.Sequential(*layers)
 
@@ -66,6 +72,32 @@ class ConvNet(nn.Module):
     def forward(self, x):
         return self.net(x)
 
+# scattering transform
+
+class ScatteringTransform(nn.Module):
+    def __init__(self, dims, heads, activation = None):
+        super().__init__()
+        assert len(dims) > 2, 'must have at least 3 dimensions, for dimension in, the hidden dimension, and dimension out'
+
+        dim_in, *hidden_sizes, dim_out = dims
+
+        dim_in //= heads
+        dim_out //= heads
+
+        self.heads = heads
+        self.mlp = MLP(dim_in, *hidden_sizes, dim_out, activation = activation)
+
+    def forward(self, x):
+        shape, heads = x.shape, self.heads
+        dim = shape[-1]
+
+        assert (dim % heads) == 0, f'the dimension {dim} must be divisible by the number of heads {heads}'
+
+        x = x.reshape(-1, heads, dim // heads)
+        x = self.mlp(x)
+
+        return x.reshape(shape)
+
 # main scattering compositional learner class
 
 class SCL(nn.Module):
@@ -84,9 +116,7 @@ class SCL(nn.Module):
         self.vision = ConvNet(image_size, conv_channels, conv_output_dim)
 
         self.attr_heads = attr_heads
-        attr_dim = conv_output_dim // attr_heads
-
-        self.attr_net = MLP(attr_dim, *attr_net_hidden_dims, attr_dim)
+        self.attr_net = ScatteringTransform([conv_output_dim, *attr_net_hidden_dims, conv_output_dim], heads = attr_heads)
         self.ff_residual = FeedForwardResidual(conv_output_dim)
 
         self.rel_heads = rel_heads
@@ -99,9 +129,7 @@ class SCL(nn.Module):
         images = sets.view(-1, 1, h, w)
         features = self.vision(images)
 
-        features = features.reshape(features.shape[0], self.attr_heads, -1)
         attrs = self.attr_net(features)
-        attrs = attrs.reshape(b, c, n, -1)
         attrs = self.ff_residual(attrs)
 
         attrs = attrs.reshape(b, c, -1, self.rel_heads).transpose(-1, -2)

@@ -16,6 +16,8 @@ $ pip install scattering-transform
 
 ## Use
 
+Complete Scattering Compositional Learner network
+
 ```python
 import torch
 import torch.nn.functional as F
@@ -53,6 +55,24 @@ logits = model(possibilities)
 
 loss = F.cross_entropy(logits, labels)
 loss.backward()
+```
+
+Scattering Transform
+
+```python
+import torch
+from scattering_transform import ScatteringTransform
+
+# for potential use in a Transformer
+
+mlp = ScatterTransform(
+    dims = [1024, 4096, 1024],
+    heads = 16,
+    activation = nn.LeakyReLU
+)
+
+x = torch.randn(1, 512, 1024)
+mlp(x) # (1, 512, 1024)
 ```
 
 ## Citation
