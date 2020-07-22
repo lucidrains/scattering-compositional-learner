@@ -59,7 +59,7 @@ from scattering_transform import ScatteringTransform
 
 # for potential use in a Transformer
 
-mlp = ScatterTransform(
+mlp = ScatteringTransform(
     dims = [1024, 4096, 1024],    # MLP - dimension in -> hidden sizes -> dimension out
     heads = 16,                   # number of groups (heads)
     activation = nn.LeakyReLU     # activation to use in the MLP

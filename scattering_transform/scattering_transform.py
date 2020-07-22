@@ -28,7 +28,7 @@ class MLP(nn.Module):
             is_last = ind >= (len(pairs) - 1)
             layers.append(nn.Linear(dim_in, dim_out))
             if not is_last:
-                layers.append(activation(inplace = True))
+                layers.append(activation())
 
         self.net = nn.Sequential(*layers)
 
